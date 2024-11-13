@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "DemoNotificationAndVehicles",
-    "slug": "DemoNotificationAndVehicles",
+    "slug": "push-notifcation-vehilces",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.operanex.nuthook",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,6 +32,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a5b27e8f-5dd5-42e2-afec-eb6cf13d1825"
+      }
+    },
+    "owner": "copyali"
   }
 }

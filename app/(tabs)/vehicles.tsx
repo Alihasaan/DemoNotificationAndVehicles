@@ -8,8 +8,10 @@ import {
   Text,
   StatusBar,
   useColorScheme,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useRouter } from 'expo-router';
 
 type ItemData = {
   id: string;
@@ -74,70 +76,86 @@ const DATA: ItemData[] = [
   },
 ];
 
-const ListItem: React.FC<{ item: ItemData; isDarkMode: boolean }> = ({
-  item,
-  isDarkMode,
-}) => (
-  <View style={[styles.item, isDarkMode ? styles.darkItem : styles.lightItem]}>
+const ListItem: React.FC<{
+  item: ItemData;
+  isDarkMode: boolean;
+  onPress: () => void;
+}> = ({ item, isDarkMode, onPress }) => (
+  <TouchableOpacity onPress={onPress}>
     <View
-      style={[
-        styles.iconContainer,
-        isDarkMode ? styles.darkIconContainer : styles.lightIconContainer,
-      ]}
+      style={[styles.item, isDarkMode ? styles.darkItem : styles.lightItem]}
     >
-      <Icon
-        name={item.icon}
-        size={34}
-        color={isDarkMode ? '#fff' : '#374151'}
-      />
       <View
         style={[
-          styles.statusIconContainer,
-          isDarkMode
-            ? styles.darkStatusIconContainer
-            : styles.lightStatusIconContainer,
+          styles.iconContainer,
+          isDarkMode ? styles.darkIconContainer : styles.lightIconContainer,
         ]}
       >
-        {item.status === 'active' && (
-          <Icon name='navigation-variant-outline' size={15} color='#4CAF50' />
-        )}
-        {item.status === 'inactive' && (
-          <Ionicons name='cloud-offline-outline' size={15} color='#F44336' />
-        )}
-        {item.status === 'warning' && (
-          <AntDesign name='minuscircleo' size={15} color='#FFC107' />
+        <Icon
+          name={item.icon}
+          size={34}
+          color={isDarkMode ? '#fff' : '#374151'}
+        />
+        <View
+          style={[
+            styles.statusIconContainer,
+            isDarkMode
+              ? styles.darkStatusIconContainer
+              : styles.lightStatusIconContainer,
+          ]}
+        >
+          {item.status === 'active' && (
+            <Icon name='navigation-variant-outline' size={15} color='#4CAF50' />
+          )}
+          {item.status === 'inactive' && (
+            <Ionicons name='cloud-offline-outline' size={15} color='#F44336' />
+          )}
+          {item.status === 'warning' && (
+            <AntDesign name='minuscircleo' size={15} color='#FFC107' />
+          )}
+        </View>
+      </View>
+      <View style={styles.textContainer}>
+        <Text
+          style={[
+            styles.title,
+            isDarkMode ? styles.darkText : styles.lightText,
+          ]}
+        >
+          {item.title}
+        </Text>
+        <Text
+          style={[
+            styles.weight,
+            isDarkMode ? styles.darkSubText : styles.lightSubText,
+          ]}
+        >
+          {item.weight}
+        </Text>
+        {item.lastSeen && <Text style={styles.lastSeen}>{item.lastSeen}</Text>}
+      </View>
+      <View style={styles.rightContainer}>
+        {item.hasNotification && (
+          <View style={styles.notificationContainer}>
+            <Icon name='bell-ring-outline' size={20} color='#FFC107' />
+          </View>
         )}
       </View>
     </View>
-    <View style={styles.textContainer}>
-      <Text
-        style={[styles.title, isDarkMode ? styles.darkText : styles.lightText]}
-      >
-        {item.title}
-      </Text>
-      <Text
-        style={[
-          styles.weight,
-          isDarkMode ? styles.darkSubText : styles.lightSubText,
-        ]}
-      >
-        {item.weight}
-      </Text>
-      {item.lastSeen && <Text style={styles.lastSeen}>{item.lastSeen}</Text>}
-    </View>
-    <View style={styles.rightContainer}>
-      {item.hasNotification && (
-        <View style={styles.notificationContainer}>
-          <Icon name='bell-ring-outline' size={20} color='#FFC107' />
-        </View>
-      )}
-    </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const Vehicles = () => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
+  const router = useRouter();
+
+  const handleVehiclePress = (vehicle: ItemData) => {
+    router.push({
+      pathname: '/screens/vehicleMapView',
+      params: { id: vehicle.id, vehicle: JSON.stringify(vehicle) },
+    });
+  };
 
   return (
     <SafeAreaView
@@ -147,7 +165,11 @@ const Vehicles = () => {
       <FlatList
         data={DATA}
         renderItem={({ item }) => (
-          <ListItem item={item} isDarkMode={isDarkMode} />
+          <ListItem
+            item={item}
+            isDarkMode={isDarkMode}
+            onPress={() => handleVehiclePress(item)}
+          />
         )}
         keyExtractor={item => item.id}
       />

@@ -16,7 +16,9 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { Snackbar } from 'react-native-paper';
+import { Button, Icon, IconButton, Snackbar } from 'react-native-paper';
+import { useAuth } from '../contexts/AuthContext';
+import { router } from 'expo-router';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -134,6 +136,7 @@ export default function Home() {
         Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
+  const { logout } = useAuth();
 
   const styles = StyleSheet.create({
     container: {
@@ -190,15 +193,30 @@ export default function Home() {
   return (
     <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
+        <Button
+          buttonColor={isDarkMode ? '#3B82F6' : '#2563EB'}
+          textColor='#FFFFFF'
+          icon={'bell'}
+          mode='elevated'
           onPress={async () => {
             await sendPushNotification(expoPushToken);
           }}
         >
-          <Text style={styles.buttonText}>Send Notification</Text>
-        </TouchableOpacity>
-
+          Send Notification
+        </Button>
+        <View style={{ padding: 10 }}></View>
+        <Button
+          buttonColor={isDarkMode ? '#3B82F6' : '#2563EB'}
+          textColor='#FFFFFF'
+          icon={'logout'}
+          mode='contained'
+          onPress={() => {
+            logout;
+            router.replace('/(auth)/login');
+          }}
+        >
+          Logout
+        </Button>
         <Snackbar
           visible={isSnackbarVisible}
           onDismiss={() => setIsSnackbarVisible(false)}
@@ -212,7 +230,6 @@ export default function Home() {
         >
           You have a new notification
         </Snackbar>
-
         <Modal
           animationType='slide'
           transparent={true}
